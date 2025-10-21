@@ -3,6 +3,7 @@
 
 
 - Designed for use in Home Assitant to create a Google-like experience when casting dashboards to smart displays.
+- Config options for using an Album from your Immich library. Or use the default wildcard images.
 
 
 
