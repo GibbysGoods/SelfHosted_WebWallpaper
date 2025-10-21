@@ -2,6 +2,9 @@
 A simple an easily configurable webpage based wallpaper. 
 
 
+Designed for use in Home Assitant to create a Google-like experience when casting dashboards to smart displays.
+
+
 Easily configurable and simple to set up with any server supervisor such as TrueNAS and deployable with a basic Docker Compose file.
 
 
