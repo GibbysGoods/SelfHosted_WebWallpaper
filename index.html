@@ -1,1 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Home Dashboard Wallpaper</title>
+<style>
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; height:100%; width:100%; background:black; font-family:'Segoe UI', Roboto, sans-serif; color:white; overflow:hidden; }
+  #wallpaper { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; transition:opacity 2s ease; z-index:0; cursor:pointer; }
+  .overlay { position:fixed; bottom:30px; left:30px; z-index:2; backdrop-filter:blur(8px) brightness(0.8); background:rgba(0,0,0,0.4); border-radius:16px; padding:20px 28px; box-shadow:0 4px 12px rgba(0,0,0,0.3); display:flex; flex-direction:column; align-items:flex-start; min-width:240px; }
+  .time { font-size:2.8em; font-weight:600; line-height:1; }
+  .date { font-size:1.1em; opacity:0.8; margin-bottom:8px; }
+  .weather { display:flex; align-items:center; gap:10px; font-size:1.1em; }
+  .weather-icon { width:28px; height:28px; }
+  .temp { font-size:1.6em; font-weight:500; margin-top:4px; }
+
+  #configModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); z-index:5; align-items:center; justify-content:center; }
+  .config-box { background:#1e1e1e; border-radius:16px; padding:24px; width:360px; max-height:80%; overflow-y:auto; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+  .config-box h2 { margin-top:0; font-weight:500; text-align:center; }
+  label { display:block; margin:10px 0 4px; font-size:0.9em; opacity:0.8; }
+  input, select { width:100%; padding:8px 10px; border:none; border-radius:8px; font-size:1em; background:#333; color:white; }
+  button { margin-top:16px; width:100%; padding:10px; border:none; border-radius:10px; background:#0078ff; color:white; font-size:1em; font-weight:500; cursor:pointer; }
+  button:hover { background:#2196f3; }
+</style>
+</head>
+<body>
+<img id="wallpaper" src="" alt="Wallpaper" />
+<div class="overlay" id="overlay">
+  <div class="time" id="clock">--:--</div>
+  <div class="date" id="date">Loading...</div>
+  <div class="weather">
+    <img id="icon" class="weather-icon" src="" alt="" />
+    <div id="weather">Fetching weather...</div>
+  </div>
+  <div class="temp" id="temp"></div>
+</div>
+
+<div id="configModal">
+  <div class="config-box">
+    <h2>Settings</h2>
+    <label for="timezone">Timezone</label>
+    <select id="timezone">
+      <option value="America/Vancouver">Pacific (Vancouver)</option>
+      <option value="America/Edmonton">Mountain (Edmonton)</option>
+      <option value="America/Winnipeg">Central (Winnipeg)</option>
+      <option value="America/Toronto">Eastern (Toronto)</option>
+      <option value="America/Halifax">Atlantic (Halifax)</option>
+    </select>
+
+    <label for="city">City</label>
+    <input id="city" type="text" placeholder="Auto-detect or enter manually" />
+
+    <label for="immichUrl">Immich Server URL (include /api)</label>
+    <input id="immichUrl" type="text" placeholder="http://192.168.1.100:7777/api" />
+
+    <label for="immichKey">Immich API Key</label>
+    <input id="immichKey" type="text" placeholder="Paste Immich API key here" />
+
+    <label for="albumId">Immich Album</label>
+    <select id="albumId"><option>Loading...</option></select>
+
+    <label for="slideInterval">Slideshow Interval (seconds)</label>
+    <input id="slideInterval" type="number" min="5" max="300" value="15" />
+
+    <label for="redirectUrl">Redirect URL</label>
+    <input id="redirectUrl" type="text" placeholder="https://your-dashboard.local" />
+
+    <button id="saveConfig">Save & Close</button>
+  </div>
+</div>
+
+<script>
+const img = document.getElementById('wallpaper');
+const clockEl = document.getElementById("clock");
+const dateEl = document.getElementById("date");
+const weatherEl = document.getElementById("weather");
+const tempEl = document.getElementById("temp");
+const iconEl = document.getElementById("icon");
+const overlay = document.getElementById('overlay');
+const modal = document.getElementById('configModal');
+const tzInput = document.getElementById('timezone');
+const cityInput = document.getElementById('city');
+const urlInput = document.getElementById('immichUrl');
+const keyInput = document.getElementById('immichKey');
+const albumIdInput = document.getElementById('albumId');
+const slideInput = document.getElementById('slideInterval');
+const redirectInput = document.getElementById('redirectUrl');
+const saveBtn = document.getElementById('saveConfig');
+
+let config = JSON.parse(localStorage.getItem('wallConfig')) || {
+  timezone: 'America/Vancouver',
+  city: '',
+  immichUrl: '',
+  immichKey: '',
+  albumId: '',
+  slideInterval: 15,
+  redirectUrl: ''
+};
+
+let albumImages = [], slideIndex = 0, slideTimer;
+const fallbackImages = [
+  "https://picsum.photos/1920/1080?random=1",
+  "https://picsum.photos/1920/1080?random=2",
+  "https://picsum.photos/1920/1080?random=3"
+];
+
+function nextSlide() {
+  const srcList = albumImages.length ? albumImages : fallbackImages;
+  img.style.opacity = 0;
+  setTimeout(() => {
+    img.src = srcList[slideIndex % srcList.length];
+    img.onload = () => img.style.opacity = 1;
+    slideIndex++;
+  }, 500);
+}
+function startSlideshow() {
+  clearInterval(slideTimer);
+  slideTimer = setInterval(nextSlide, config.slideInterval * 1000);
+  nextSlide();
+}
+
+function updateClock() {
+  const now = new Date();
+  clockEl.textContent = now.toLocaleTimeString("en-US", { timeZone: config.timezone, hour: "numeric", minute: "2-digit", hour12: true });
+  dateEl.textContent = now.toLocaleDateString("en-US", { timeZone: config.timezone, weekday: "long", month: "long", day: "numeric" });
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+async function fetchWeather() {
+  try {
+    let lat, lon, cityName = config.city;
+    if (!cityName) {
+      if (navigator.geolocation) {
+        await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
+      }
+      cityName = "Vancouver";
+    }
+    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1`);
+    const geo = await geoRes.json();
+    if (!geo.results?.length) throw new Error("No geocode found");
+    lat = geo.results[0].latitude;
+    lon = geo.results[0].longitude;
+    cityName = geo.results[0].name;
+
+    const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+    const wData = await wRes.json();
+    const w = wData.current_weather;
+    weatherEl.textContent = `${cityName} • ${getWeatherDesc(w.weathercode)}`;
+    tempEl.textContent = `${w.temperature.toFixed(1)}°C`;
+    iconEl.src = getWeatherIcon(w.weathercode);
+  } catch {
+    weatherEl.textContent = "Weather unavailable";
+    tempEl.textContent = "";
+  }
+}
+function getWeatherDesc(c) {
+  const map = {0:"Clear sky",1:"Mainly clear",2:"Partly cloudy",3:"Overcast",45:"Fog",48:"Rime fog",51:"Drizzle",61:"Light rain",63:"Moderate rain",65:"Heavy rain",71:"Light snow",73:"Moderate snow",75:"Heavy snow",95:"Thunderstorm"};
+  return map[c] || "Unknown";
+}
+function getWeatherIcon(c) {
+  if([0,1].includes(c)) return "https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set%20-%20Color/clear-day.png";
+  if([2,3].includes(c)) return "https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set%20-%20Color/cloudy.png";
+  if([45,48].includes(c)) return "https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set%20-%20Color/fog.png";
+  if([51,61,63,65].includes(c)) return "https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set%20-%20Color/rain.png";
+  if([71,73,75].includes(c)) return "https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set%20-%20Color/snow.png";
+  if(c===95) return "https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set%20-%20Color/thunderstorm.png";
+  return "https://raw.githubusercontent.com/visualcrossing/WeatherIcons/main/PNG/2nd%20Set%20-%20Color/na.png";
+}
+
+async function loadAlbums() {
+  if (!config.immichUrl || !config.immichKey) return;
+  try {
+    const res = await fetch(`http://192.168.1.99:4030/albums?immichUrl=${encodeURIComponent(config.immichUrl)}&immichKey=${encodeURIComponent(config.immichKey)}`);
+    const data = await res.json();
+    albumIdInput.innerHTML = data.map(a => `<option value="${a.id}">${a.albumName}</option>`).join("");
+  } catch (err) {
+    console.error("Failed to load albums", err);
+  }
+}
+
+async function loadAlbumImages(id) {
+  if (!config.immichUrl || !config.immichKey) return;
+  try {
+    const res = await fetch(`http://192.168.1.99:4030/album/${id}?immichUrl=${encodeURIComponent(config.immichUrl)}&immichKey=${encodeURIComponent(config.immichKey)}`);
+    albumImages = await res.json();
+    slideIndex = 0;
+    startSlideshow();
+  } catch {
+    albumImages = fallbackImages;
+    startSlideshow();
+  }
+}
+
+let pressTimer;
+overlay.addEventListener("mousedown",()=>pressTimer=setTimeout(openModal,800));
+overlay.addEventListener("mouseup",()=>clearTimeout(pressTimer));
+overlay.addEventListener("mouseleave",()=>clearTimeout(pressTimer));
+overlay.addEventListener("touchstart",()=>pressTimer=setTimeout(openModal,800));
+overlay.addEventListener("touchend",()=>clearTimeout(pressTimer));
+
+function openModal() {
+  tzInput.value = config.timezone;
+  cityInput.value = config.city;
+  urlInput.value = config.immichUrl;
+  keyInput.value = config.immichKey;
+  slideInput.value = config.slideInterval;
+  redirectInput.value = config.redirectUrl;
+  modal.style.display = "flex";
+  loadAlbums();
+}
+
+saveBtn.onclick = () => {
+  config.timezone = tzInput.value;
+  config.city = cityInput.value.trim();
+  config.immichUrl = urlInput.value.trim();
+  config.immichKey = keyInput.value.trim();
+  config.albumId = albumIdInput.value;
+  config.slideInterval = parseInt(slideInput.value);
+  config.redirectUrl = redirectInput.value.trim();
+  localStorage.setItem("wallConfig", JSON.stringify(config));
+  modal.style.display = "none";
+  loadAlbumImages(config.albumId);
+};
+
+modal.addEventListener("click", e => { if (e.target === modal) modal.style.display = "none"; });
+img.addEventListener("click", () => { if (config.redirectUrl) window.location.href = config.redirectUrl; });
+
+loadAlbumImages(config.albumId);
+fetchWeather();
+startSlideshow();
+</script>
+</body>
+</html>
 
