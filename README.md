@@ -55,3 +55,13 @@ ________________________________________________________________________________
 - Setup any folders as datasets in your hypervisor, i found this made permission management a lot easier.
 
 - You can create the files using file browser but i found using 'cat' commands in TrueNAS shell was more reliable for anything in the immichproxy folder likely due to permissions or something. Index.html i created with file browser though to make it easier to make small changes as required.
+
+
+# Gallery
+
+
+<img width="1919" height="918" alt="image" src="https://github.com/user-attachments/assets/096fa776-2e6f-466a-9ebf-b6ac64375c40" />
+
+<img width="1915" height="919" alt="image" src="https://github.com/user-attachments/assets/54717787-5274-4b23-8f1a-66f829cd9698" />
+
+
