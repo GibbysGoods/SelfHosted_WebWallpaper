@@ -56,6 +56,8 @@ ________________________________________________________________________________
 
 - You can create the files using file browser but i found using 'cat' commands in TrueNAS shell was more reliable for anything in the immichproxy folder likely due to permissions or something. Index.html i created with file browser though to make it easier to make small changes as required.
 
+- Create an API key in Immich settings and paste it into the config along with the server URL the way it is shown in the tooltip.
+
 
 # Gallery
 
