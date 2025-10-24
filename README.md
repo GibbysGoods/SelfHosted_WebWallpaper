@@ -18,7 +18,7 @@
 
 ___________________________________________________________________________________________________________
 
-## FULL DISCLOSURE, MOST OF THIS CODE WAS AI GENERATED (I JUST NEEDED SOMETHING FAST SUE ME LOL). I DID HOWEVER SPEND ABOUT 8 HOURS TROUBLESHOOTING THIS SO I CAN HELP WITH BASIC ISSUES IF REQUIRED :)
+#### FULL DISCLOSURE, MOST OF THIS CODE WAS AI GENERATED (I JUST NEEDED SOMETHING FAST SUE ME LOL). I DID HOWEVER SPEND ABOUT 8 HOURS TROUBLESHOOTING THIS SO I CAN HELP WITH BASIC ISSUES IF REQUIRED :)
 
 ________________________________________________________________________________________________________________
 
