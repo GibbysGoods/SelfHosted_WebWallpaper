@@ -30,7 +30,7 @@ Example File Path Structure in TrueNAS (or other hypervisor)
 
 
 ```text
-/mnt/BasePool/WebWallpaper/
+/mnt/poolname/webwallpaper/
 ├── 📄 index.html
 │   └─ Main webpage (UI + logic for wallpaper, weather, config)
 │
