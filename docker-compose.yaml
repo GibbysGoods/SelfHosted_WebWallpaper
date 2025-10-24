@@ -1,0 +1,25 @@
+services:
+  wallpaper:
+    image: nginx:alpine
+    container_name: webwallpaper
+    ports:
+      - 7077:80    #set first digit to port you want wallpaper to show up on (i dont think this is affected by anything in the code but it might be)
+    volumes:
+      - /mnt/<yourpathhere>/index.html:/usr/share/nginx/html/index.html:ro     #change this to the path you have your index.html at (eg. /mnt/poolname/webwallpaper/index.html:/usr/share/nginx/html/index.html:ro)
+    restart: unless-stopped
+  immich-proxy:
+    container_name: immich-proxy
+    image: node:20
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - 4030:4030    #immich proxy port, set both as required (i dont think this is affected by anything in the code but it might be)
+    volumes:
+      - /mnt/<yourpathhere>:/app     #change to you immich proxy folder path (eg. /mnt/poolname/webwallpaper/immichproxy:/app)
+    environment:
+      - PORT=4030    #same as other port in immich proxy
+    command: >
+      bash -c " if [ ! -f package.json ]; then
+        echo '{\"name\":\"immich-proxy\",\"version\":\"1.0.0\",\"main\":\"server.js\",\"dependencies\":{\"express\":\"^4.18.2\",\"node-fetch\":\"^2.6.7\",\"cors\":\"^2.8.5\"}}' > package.json;
+      fi && npm install && node server.js "
+networks: {}
