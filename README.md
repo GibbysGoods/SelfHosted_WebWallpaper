@@ -52,9 +52,9 @@ Example File Path Structure in TrueNAS (or other hypervisor)
 
 _______________________________________________________________________________________________________________
 
-- Setup any folders as datasets in your hypervisor, i found this made permission management a lot easier.
+- Setup any folders as datasets in your hypervisor, I found this made permission management a lot easier.
 
-- You can create the files using file browser but i found using 'cat' commands in TrueNAS shell was more reliable for anything in the immichproxy folder likely due to permissions or something. Index.html i created with file browser though to make it easier to make small changes as required.
+- You can create the files using file browser but I found using 'cat' commands in TrueNAS shell was more reliable for anything in the immichproxy folder likely due to permissions or something. The index.html I created with file browser though to make it easier to make small changes as required.
 
 - Click and hold on weather/time box to get to the config screen.
 
