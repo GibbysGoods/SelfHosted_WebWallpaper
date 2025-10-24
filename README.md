@@ -28,23 +28,26 @@ ________________________________________________________________________________
 Example File Path Structure in TrueNAS (or other hypervisor)
 
 
+
+```text
 /mnt/BasePool/WebWallpaper/
 ├── 📄 index.html
-│ └─ Main webpage UI and logic for wallpaper, weather, and Immich integration.
+│   └─ Main webpage UI and logic for wallpaper, weather, and Immich integration.
 │
 ├── 🐋 docker-compose.yml
-│ └─ Defines the Nginx static webserver and Node.js Immich proxy services.
+│   └─ Defines the Nginx static webserver and Node.js Immich proxy services.
 │
 ├── 📂 immichproxy/
-│ ├── 📄 server.js
-│ │ └─ Express backend that handles Immich API requests.
-│ ├── 📄 package.json
-│ │ └─ Node project manifest (express + node-fetch dependencies).
-│ ├── 📄 package-lock.json
-│ │ └─ Auto-generated dependency lock file.
+│   ├── 📄 server.js
+│   │   └─ Express backend that handles Immich API requests.
+│   ├── 📄 package.json
+│   │   └─ Node project manifest (express + node-fetch dependencies).
+│   ├── 📄 package-lock.json
+│   │   └─ Auto-generated dependency lock file.
 │
 └── 📘 README.md
-└─ Documentation and setup instructions for this project.
+    └─ Documentation and setup instructions for this project.
+```
 
 /mnt/poolname/webwallpaper/
 │
